@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  elliotFunction
+
+  Aws Lambda with fastapi
+
+Parameters:
+  Database:
+    Type: String
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: python3.8
+    Layers:
+      - !Ref SharedLayer
+    Environment:
+      Variables:
+        DATABASE_URI: !Ref Database
+
+Resources:
+  RouteApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Demo
+      EndpointConfiguration: REGIONAL
+
+  MoviesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Properties:
+            RestApiId:
+              Ref: RouteApi
+            Path: /{proxy+}
+            Method: ANY
+          Type: Api
+      FunctionName: elliot-fastapi-movies
+      CodeUri: microservices/movie_service
+      Handler: app.main.handler
+
+  SharedLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: elliot-demo-shared
+      Description: common dependencies
+      ContentUri: shared/
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Delete

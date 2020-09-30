@@ -1,0 +1,6 @@
+fastapi
+mangum
+databases[postgresql]
+httpx
+SQLAlchemy
+asyncpg
