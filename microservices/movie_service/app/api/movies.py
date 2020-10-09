@@ -1,9 +1,9 @@
-from microservices.movie_service.app.api.models import MovieUpdate
-from typing import List, cast
+from typing import List
 from fastapi import Header, APIRouter, HTTPException
 
-from app.api.models import MovieIn, MovieOut
+from app.api.models import MovieIn, MovieOut, MovieUpdate
 from app.api import db_manager
+from app.api.service import is_cast_present
 
 
 movies = APIRouter()

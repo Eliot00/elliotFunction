@@ -3,10 +3,12 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   elliotFunction
 
-  Aws Lambda with fastapi
+  Aws Lambda with fastapi and microserver
 
 Parameters:
   Database:
+    Type: String
+  CastUrl:
     Type: String
 
 Globals:
@@ -30,15 +32,47 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Events:
-        ApiEvent:
+        Base:
           Properties:
             RestApiId:
               Ref: RouteApi
-            Path: /{proxy+}
+            Path: /api/v1/movies
+            Method: ANY
+          Type: Api
+        Others:
+          Properties:
+            RestApiId:
+              Ref: RouteApi
+            Path: /api/v1/movies/{proxy+}
             Method: ANY
           Type: Api
       FunctionName: elliot-fastapi-movies
-      CodeUri: microservices/movie_service
+      CodeUri: microservices/movie_service/
+      Handler: app.main.handler
+      Environment:
+        Variables:
+          CAST_SERVICE_HOST_URL: !Ref CastUrl
+
+  CastsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        Base:
+          Properties:
+            RestApiId:
+              Ref: RouteApi
+            Path: /api/v1/casts
+            Method: ANY
+          Type: Api
+        Others:
+          Properties:
+            RestApiId:
+              Ref: RouteApi
+            Path: /api/v1/casts/{proxy+}
+            Method: ANY
+          Type: Api
+      FunctionName: elliot-fastapi-casts
+      CodeUri: microservices/cast_service/
       Handler: app.main.handler
 
   SharedLayer:

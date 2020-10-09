@@ -1,10 +1,13 @@
 from fastapi import FastAPI
+from mangum import Mangum
 from app.api.casts import casts
 from app.api.db import metadata, database, engine
 
 metadata.create_all(engine)
 
-app = FastAPI(openapi_prefix="/Demo", openapi_url="/api/v1/casts/openapi.json", docs_url="/api/v1/casts/docs")
+prefix = "/api/v1/casts"
+
+app = FastAPI(openapi_prefix="/Demo", openapi_url=f"{prefix}/openapi.json", docs_url=f"{prefix}/docs")
 
 @app.on_event("startup")
 async def startup():
@@ -14,4 +17,6 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-app.include_router(casts, prefix='/api/v1/casts', tags=['casts'])
+app.include_router(casts, prefix=prefix, tags=['casts'])
+
+handler = Mangum(app)
