@@ -80,6 +80,9 @@ Resources:
     Properties:
       LayerName: elliot-demo-shared
       Description: common dependencies
-      ContentUri: shared/
-      LicenseInfo: 'MIT'
+      ContentUri: shared
+      CompatibleRuntimes:
+        - python3.8
       RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
